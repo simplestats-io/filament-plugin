@@ -1,0 +1,58 @@
+{
+    "name": "simplestats-io/filament-plugin",
+    "description": "Filament v5 dashboard plugin for SimpleStats analytics. View your visitors, registrations, and revenue directly in your Filament panel.",
+    "keywords": [
+        "simplestats-io",
+        "filament",
+        "analytics",
+        "dashboard",
+        "revenue-attribution"
+    ],
+    "homepage": "https://github.com/simplestats-io/filament-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Zacharias Creutznacher",
+            "email": "zacharias.creutznacher@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "filament/filament": "^5.0",
+        "spatie/laravel-package-tools": "^1.16"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^3.7",
+        "pestphp/pest-plugin-laravel": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "SimpleStatsIo\\FilamentPlugin\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SimpleStatsIo\\FilamentPlugin\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "SimpleStatsIo\\FilamentPlugin\\SimplestatsPluginServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
