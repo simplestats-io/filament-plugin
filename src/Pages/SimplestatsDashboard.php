@@ -7,9 +7,11 @@ use Filament\Pages\Dashboard;
 use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Filament\Schemas\Schema;
 use SimpleStatsIo\FilamentPlugin\SimplestatsPlugin;
+use SimpleStatsIo\FilamentPlugin\Widgets\EntryPagesWidget;
 use SimpleStatsIo\FilamentPlugin\Widgets\RevenueChartWidget;
 use SimpleStatsIo\FilamentPlugin\Widgets\StatsOverviewWidget;
 use SimpleStatsIo\FilamentPlugin\Widgets\TopCountriesWidget;
+use SimpleStatsIo\FilamentPlugin\Widgets\TopReferrersWidget;
 use SimpleStatsIo\FilamentPlugin\Widgets\TopSourcesWidget;
 use SimpleStatsIo\FilamentPlugin\Widgets\VisitorsChartWidget;
 
@@ -47,8 +49,10 @@ class SimplestatsDashboard extends Dashboard
             StatsOverviewWidget::class,
             VisitorsChartWidget::class,
             RevenueChartWidget::class,
+            TopReferrersWidget::class,
             TopSourcesWidget::class,
             TopCountriesWidget::class,
+            EntryPagesWidget::class,
         ];
     }
 

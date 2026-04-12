@@ -9,7 +9,7 @@ class RevenueChartWidget extends ChartWidget
 {
     use InteractsWithSimplestatsApi;
 
-    protected static ?string $heading = 'Revenue';
+    protected ?string $heading = 'Revenue';
 
     protected int|string|array $columnSpan = 1;
 
@@ -21,7 +21,7 @@ class RevenueChartWidget extends ChartWidget
     protected function getData(): array
     {
         $response = $this->getApiClient()->getStats($this->getApiFilters());
-        $data = $response['data'] ?? [];
+        $data = array_reverse($response['data'] ?? []);
 
         $labels = array_column($data, 'date');
 
@@ -44,7 +44,7 @@ class RevenueChartWidget extends ChartWidget
             ],
         ];
 
-        $previousData = $response['data_previous'] ?? [];
+        $previousData = array_reverse($response['data_previous'] ?? []);
         if (! empty($previousData)) {
             $datasets[] = [
                 'label' => 'Gross (previous)',

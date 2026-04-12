@@ -9,7 +9,7 @@ class VisitorsChartWidget extends ChartWidget
 {
     use InteractsWithSimplestatsApi;
 
-    protected static ?string $heading = 'Visitors & Registrations';
+    protected ?string $heading = 'Visitors & Registrations';
 
     protected int|string|array $columnSpan = 1;
 
@@ -21,7 +21,7 @@ class VisitorsChartWidget extends ChartWidget
     protected function getData(): array
     {
         $response = $this->getApiClient()->getStats($this->getApiFilters());
-        $data = $response['data'] ?? [];
+        $data = array_reverse($response['data'] ?? []);
 
         $labels = array_column($data, 'date');
         $visitors = array_column($data, 'pd_visitor');
@@ -46,7 +46,7 @@ class VisitorsChartWidget extends ChartWidget
             ],
         ];
 
-        $previousData = $response['data_previous'] ?? [];
+        $previousData = array_reverse($response['data_previous'] ?? []);
         if (! empty($previousData)) {
             $datasets[] = [
                 'label' => 'Visitors (previous)',

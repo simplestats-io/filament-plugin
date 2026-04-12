@@ -13,8 +13,8 @@ class StatsOverviewWidget extends BaseWidget
     protected function getStats(): array
     {
         $response = $this->getApiClient()->getStats($this->getApiFilters());
-        $data = $response['data'] ?? [];
-        $previousData = $response['data_previous'] ?? [];
+        $data = array_reverse($response['data'] ?? []);
+        $previousData = array_reverse($response['data_previous'] ?? []);
 
         if (empty($data)) {
             return [
@@ -23,6 +23,7 @@ class StatsOverviewWidget extends BaseWidget
                 Stat::make('CR', '-'),
                 Stat::make('Net Revenue', '-'),
                 Stat::make('ARPU', '-'),
+                Stat::make('ARPV', '-'),
             ];
         }
 
@@ -32,6 +33,7 @@ class StatsOverviewWidget extends BaseWidget
         $cr = $totalVisitors > 0 ? round(($totalReg / $totalVisitors) * 100, 2) : 0;
         $lastPeriod = end($data);
         $arpu = $lastPeriod['lt_arpu'] ?? 0;
+        $arpv = $lastPeriod['lt_arpv'] ?? 0;
 
         $stats = [
             Stat::make('Visitors', number_format($totalVisitors))
@@ -46,6 +48,10 @@ class StatsOverviewWidget extends BaseWidget
                 ->chart(array_column($data, 'pd_net'))
                 ->color('warning'),
             Stat::make('ARPU', $this->formatCurrency($arpu))
+                ->description('Average Revenue Per User')
+                ->color('gray'),
+            Stat::make('ARPV', $this->formatCurrency($arpv))
+                ->description('Average Revenue Per Visitor')
                 ->color('gray'),
         ];
 

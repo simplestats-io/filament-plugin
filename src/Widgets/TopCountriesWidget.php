@@ -9,9 +9,11 @@ class TopCountriesWidget extends ChartWidget
 {
     use InteractsWithSimplestatsApi;
 
-    protected static ?string $heading = 'Top Countries';
+    protected ?string $heading = 'Top Countries';
 
-    protected int|string|array $columnSpan = 1;
+    protected int|string|array $columnSpan = 'full';
+
+    protected ?string $maxHeight = '300px';
 
     protected function getType(): string
     {
@@ -24,7 +26,7 @@ class TopCountriesWidget extends ChartWidget
         $data = $response['data'] ?? [];
 
         return [
-            'labels' => array_column($data, 'name'),
+            'labels' => $this->truncateLabels(array_column($data, 'name')),
             'datasets' => [
                 [
                     'label' => 'Visitors',

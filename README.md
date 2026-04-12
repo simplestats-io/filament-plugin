@@ -47,10 +47,7 @@ public function panel(Panel $panel): Panel
 {
     return $panel
         // ...
-        ->plugin(
-            SimplestatsPlugin::make()
-                ->apiToken(config('simplestats-filament.api_token'))
-        );
+        ->plugin(SimplestatsPlugin::make());
 }
 ```
 
@@ -64,13 +61,13 @@ All configuration is optional. The plugin works out of the box with just an API 
 
 ```php
 SimplestatsPlugin::make()
-    ->apiToken(config('simplestats-filament.api_token'))  // required
-    ->apiUrl('https://simplestats.io/api/v1')             // default
-    ->cacheTtl(60)                                         // cache duration in seconds
-    ->navigationGroup('Analytics')                         // Filament nav group
-    ->navigationLabel('Stats')                             // custom nav label
-    ->navigationSort(5)                                    // nav position
-    ->navigationIcon('heroicon-o-chart-bar-square')        // default icon
+    ->apiToken('custom-token')                        // defaults to config/env
+    ->apiUrl('https://simplestats.io/api/v1')         // defaults to config/env
+    ->cacheTtl(60)                                    // cache duration in seconds
+    ->navigationGroup('Analytics')                    // Filament nav group
+    ->navigationLabel('Stats')                        // custom nav label
+    ->navigationSort(5)                               // nav position
+    ->navigationIcon('heroicon-o-chart-bar-square')   // default icon
 ```
 
 ### Config File
@@ -89,15 +86,17 @@ return [
 
 ## Dashboard Widgets
 
-The plugin provides five widgets on a single dashboard page:
+The plugin provides seven widgets on a single dashboard page:
 
 | Widget | Description |
 |--------|-------------|
-| **Stats Overview** | KPI cards: Visitors, Registrations, Conversion Rate, Net Revenue, ARPU. Includes sparklines and trend percentages when comparison data is available. |
+| **Stats Overview** | KPI cards: Visitors, Registrations, CR, Net Revenue, ARPU, ARPV. Includes sparklines. |
 | **Visitors & Registrations** | Line chart showing visitors and registrations over time. |
 | **Revenue** | Line chart showing gross and net revenue over time. |
+| **Top Referrers** | Horizontal bar chart of top referrers. |
 | **Top Sources** | Horizontal bar chart of top traffic sources. |
 | **Top Countries** | Horizontal bar chart of top visitor countries. |
+| **Entry Pages** | Horizontal bar chart of top landing pages. |
 
 A time range filter lets you switch between presets (Today, Last 7 Days, Last 30 Days, This Year, All Time, etc.).
 

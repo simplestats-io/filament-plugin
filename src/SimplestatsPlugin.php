@@ -10,9 +10,9 @@ class SimplestatsPlugin implements Plugin
 {
     protected ?string $apiToken = null;
 
-    protected string $apiUrl = 'https://simplestats.io/api/v1';
+    protected ?string $apiUrl = null;
 
-    protected int $cacheTtl = 60;
+    protected ?int $cacheTtl = null;
 
     protected ?string $navigationGroup = null;
 

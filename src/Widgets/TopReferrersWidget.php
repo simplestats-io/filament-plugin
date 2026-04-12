@@ -5,11 +5,11 @@ namespace SimpleStatsIo\FilamentPlugin\Widgets;
 use Filament\Widgets\ChartWidget;
 use SimpleStatsIo\FilamentPlugin\Concerns\InteractsWithSimplestatsApi;
 
-class TopSourcesWidget extends ChartWidget
+class TopReferrersWidget extends ChartWidget
 {
     use InteractsWithSimplestatsApi;
 
-    protected ?string $heading = 'Top Sources';
+    protected ?string $heading = 'Top Referrers';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -22,7 +22,7 @@ class TopSourcesWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $response = $this->getApiClient()->getGroupedStats('track_source', $this->getApiFilters());
+        $response = $this->getApiClient()->getGroupedStats('track_referer', $this->getApiFilters());
         $data = $response['data'] ?? [];
 
         return [
@@ -31,7 +31,7 @@ class TopSourcesWidget extends ChartWidget
                 [
                     'label' => 'Visitors',
                     'data' => array_column($data, 'visitors'),
-                    'backgroundColor' => '#6366f1',
+                    'backgroundColor' => '#8b5cf6',
                 ],
             ],
         ];
