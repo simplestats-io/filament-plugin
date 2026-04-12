@@ -1,2 +1,139 @@
-# filament-plugin
-Official Filament Plugin for SimpleStats
+# Filament Plugin for SimpleStats.io
+
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/simplestats-io/filament-plugin.svg?style=flat-square)](https://packagist.org/packages/simplestats-io/filament-plugin)
+[![License](https://img.shields.io/packagist/l/simplestats-io/filament-plugin.svg?style=flat-square)](https://packagist.org/packages/simplestats-io/filament-plugin)
+
+The official [Filament v5](https://filamentphp.com) plugin for [SimpleStats.io](https://simplestats.io). View your analytics directly inside your Filament panel: visitors, registrations, revenue, top sources, and top countries.
+
+![screenshot](https://simplestats.io/images/screenshot.png)
+
+## Requirements
+
+- PHP 8.2+
+- Laravel 12+
+- Filament 5+
+- A SimpleStats.io account with an API token
+
+## Installation
+
+Install via Composer:
+
+```bash
+composer require simplestats-io/filament-plugin
+```
+
+Optionally publish the config file:
+
+```bash
+php artisan vendor:publish --tag="simplestats-filament-config"
+```
+
+Add your API token to `.env`:
+
+```env
+SIMPLESTATS_API_TOKEN=your-api-token-here
+```
+
+## Setup
+
+Register the plugin in your Filament `PanelProvider`:
+
+```php
+use SimpleStatsIo\FilamentPlugin\SimplestatsPlugin;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        // ...
+        ->plugin(
+            SimplestatsPlugin::make()
+                ->apiToken(config('simplestats-filament.api_token'))
+        );
+}
+```
+
+That's it. Navigate to `/admin/simplestats` (or your panel path + `/simplestats`) to see your dashboard.
+
+## Configuration
+
+All configuration is optional. The plugin works out of the box with just an API token.
+
+### Plugin Options
+
+```php
+SimplestatsPlugin::make()
+    ->apiToken(config('simplestats-filament.api_token'))  // required
+    ->apiUrl('https://simplestats.io/api/v1')             // default
+    ->cacheTtl(60)                                         // cache duration in seconds
+    ->navigationGroup('Analytics')                         // Filament nav group
+    ->navigationLabel('Stats')                             // custom nav label
+    ->navigationSort(5)                                    // nav position
+    ->navigationIcon('heroicon-o-chart-bar-square')        // default icon
+```
+
+### Config File
+
+If you published the config, you can set defaults via environment variables:
+
+```php
+// config/simplestats-filament.php
+
+return [
+    'api_url' => env('SIMPLESTATS_API_URL', 'https://simplestats.io/api/v1'),
+    'api_token' => env('SIMPLESTATS_API_TOKEN'),
+    'cache_ttl' => 60,
+];
+```
+
+## Dashboard Widgets
+
+The plugin provides five widgets on a single dashboard page:
+
+| Widget | Description |
+|--------|-------------|
+| **Stats Overview** | KPI cards: Visitors, Registrations, Conversion Rate, Net Revenue, ARPU. Includes sparklines and trend percentages when comparison data is available. |
+| **Visitors & Registrations** | Line chart showing visitors and registrations over time. |
+| **Revenue** | Line chart showing gross and net revenue over time. |
+| **Top Sources** | Horizontal bar chart of top traffic sources. |
+| **Top Countries** | Horizontal bar chart of top visitor countries. |
+
+A time range filter lets you switch between presets (Today, Last 7 Days, Last 30 Days, This Year, All Time, etc.).
+
+## Self-Hosted
+
+If you are running a self-hosted SimpleStats instance, point the plugin to your own API:
+
+```php
+SimplestatsPlugin::make()
+    ->apiToken(config('simplestats-filament.api_token'))
+    ->apiUrl('https://your-simplestats-instance.com/api/v1')
+```
+
+Or via `.env`:
+
+```env
+SIMPLESTATS_API_URL=https://your-simplestats-instance.com/api/v1
+```
+
+## Testing
+
+```bash
+composer test
+```
+
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+
+## Security Vulnerabilities
+
+Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+
+## Credits
+
+- [Zacharias Creutznacher](https://github.com/sairahcaz)
+- [All Contributors](../../contributors)
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE) for more information.
