@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use SimpleStatsIo\FilamentPlugin\SimplestatsApiClient;
@@ -114,7 +113,7 @@ it('uses different cache keys for different filters', function () {
 
 it('returns empty response on connection error', function () {
     Http::fake([
-        'simplestats.io/api/v1/stats*' => fn () => throw new ConnectionException('Timeout'),
+        'simplestats.io/api/v1/stats*' => fn () => throw new \Illuminate\Http\Client\ConnectionException('Timeout'),
     ]);
 
     $result = $this->client->getStats();
