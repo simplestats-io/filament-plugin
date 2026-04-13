@@ -38,14 +38,18 @@ class StatsOverviewWidget extends BaseWidget
         $stats = [
             Stat::make('Visitors', number_format($totalVisitors))
                 ->chart(array_column($data, 'pd_visitor'))
+                ->description('Unique visitors')
                 ->color('primary'),
             Stat::make('Registrations', number_format($totalReg))
                 ->chart(array_column($data, 'pd_reg'))
+                ->description('New user signups')
                 ->color('success'),
             Stat::make('CR', $cr.'%')
+                ->description('Visitor to registration conversion')
                 ->color('info'),
             Stat::make('Net Revenue', $this->formatCurrency($totalNet))
                 ->chart(array_column($data, 'pd_net'))
+                ->description('Revenue after fees')
                 ->color('warning'),
             Stat::make('ARPU', $this->formatCurrency($arpu))
                 ->description('Average Revenue Per User')

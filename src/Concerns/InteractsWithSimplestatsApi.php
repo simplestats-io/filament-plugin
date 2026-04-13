@@ -26,13 +26,4 @@ trait InteractsWithSimplestatsApi
         ]);
     }
 
-    protected function truncateLabels(array $labels, int $maxLength = 25): array
-    {
-        return array_map(
-            fn (string $label) => mb_strlen($label) > $maxLength
-                ? mb_substr($label, 0, $maxLength).'...'
-                : $label,
-            $labels,
-        );
-    }
 }

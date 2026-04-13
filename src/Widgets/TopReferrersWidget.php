@@ -2,50 +2,17 @@
 
 namespace SimpleStatsIo\FilamentPlugin\Widgets;
 
-use Filament\Widgets\ChartWidget;
-use SimpleStatsIo\FilamentPlugin\Concerns\InteractsWithSimplestatsApi;
-
-class TopReferrersWidget extends ChartWidget
+class TopReferrersWidget extends GroupedStatsTableWidget
 {
-    use InteractsWithSimplestatsApi;
+    protected static ?string $heading = 'Top Referrers';
 
-    protected ?string $heading = 'Top Referrers';
-
-    protected int|string|array $columnSpan = 'full';
-
-    protected ?string $maxHeight = '300px';
-
-    protected function getType(): string
+    protected function getStatsType(): string
     {
-        return 'bar';
+        return 'track_referer';
     }
 
-    protected function getData(): array
+    protected function getGradientColor(): string
     {
-        $response = $this->getApiClient()->getGroupedStats('track_referer', $this->getApiFilters());
-        $data = $response['data'] ?? [];
-
-        return [
-            'labels' => $this->truncateLabels(array_column($data, 'name')),
-            'datasets' => [
-                [
-                    'label' => 'Visitors',
-                    'data' => array_column($data, 'visitors'),
-                    'backgroundColor' => '#8b5cf6',
-                ],
-            ],
-        ];
-    }
-
-    protected function getOptions(): array
-    {
-        return [
-            'indexAxis' => 'y',
-            'plugins' => [
-                'legend' => [
-                    'display' => false,
-                ],
-            ],
-        ];
+        return '139, 92, 246';
     }
 }

@@ -49,7 +49,15 @@ class SimplestatsApiClient
     {
         $cacheKey = 'simplestats_'.md5($endpoint.'_'.json_encode($params));
 
-        return Cache::remember($cacheKey, $this->cacheTtl, fn () => $this->request($endpoint, $params));
+        return Cache::remember($cacheKey, $this->cacheTtl, function () use ($endpoint, $params, $cacheKey) {
+            $response = $this->request($endpoint, $params);
+
+            if (empty($response['data']) && empty($response['meta'])) {
+                Cache::forget($cacheKey);
+            }
+
+            return $response;
+        });
     }
 
     protected function request(string $endpoint, array $params = []): array

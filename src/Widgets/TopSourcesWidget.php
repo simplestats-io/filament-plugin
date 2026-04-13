@@ -2,50 +2,17 @@
 
 namespace SimpleStatsIo\FilamentPlugin\Widgets;
 
-use Filament\Widgets\ChartWidget;
-use SimpleStatsIo\FilamentPlugin\Concerns\InteractsWithSimplestatsApi;
-
-class TopSourcesWidget extends ChartWidget
+class TopSourcesWidget extends GroupedStatsTableWidget
 {
-    use InteractsWithSimplestatsApi;
+    protected static ?string $heading = 'Top Sources';
 
-    protected ?string $heading = 'Top Sources';
-
-    protected int|string|array $columnSpan = 'full';
-
-    protected ?string $maxHeight = '300px';
-
-    protected function getType(): string
+    protected function getStatsType(): string
     {
-        return 'bar';
+        return 'track_source';
     }
 
-    protected function getData(): array
+    protected function getGradientColor(): string
     {
-        $response = $this->getApiClient()->getGroupedStats('track_source', $this->getApiFilters());
-        $data = $response['data'] ?? [];
-
-        return [
-            'labels' => $this->truncateLabels(array_column($data, 'name')),
-            'datasets' => [
-                [
-                    'label' => 'Visitors',
-                    'data' => array_column($data, 'visitors'),
-                    'backgroundColor' => '#6366f1',
-                ],
-            ],
-        ];
-    }
-
-    protected function getOptions(): array
-    {
-        return [
-            'indexAxis' => 'y',
-            'plugins' => [
-                'legend' => [
-                    'display' => false,
-                ],
-            ],
-        ];
+        return '99, 102, 241';
     }
 }

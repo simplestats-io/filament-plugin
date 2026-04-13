@@ -2,50 +2,17 @@
 
 namespace SimpleStatsIo\FilamentPlugin\Widgets;
 
-use Filament\Widgets\ChartWidget;
-use SimpleStatsIo\FilamentPlugin\Concerns\InteractsWithSimplestatsApi;
-
-class EntryPagesWidget extends ChartWidget
+class EntryPagesWidget extends GroupedStatsTableWidget
 {
-    use InteractsWithSimplestatsApi;
+    protected static ?string $heading = 'Entry Pages';
 
-    protected ?string $heading = 'Entry Pages';
-
-    protected int|string|array $columnSpan = 'full';
-
-    protected ?string $maxHeight = '300px';
-
-    protected function getType(): string
+    protected function getStatsType(): string
     {
-        return 'bar';
+        return 'page_entry';
     }
 
-    protected function getData(): array
+    protected function getGradientColor(): string
     {
-        $response = $this->getApiClient()->getGroupedStats('page_entry', $this->getApiFilters());
-        $data = $response['data'] ?? [];
-
-        return [
-            'labels' => $this->truncateLabels(array_column($data, 'name')),
-            'datasets' => [
-                [
-                    'label' => 'Visitors',
-                    'data' => array_column($data, 'visitors'),
-                    'backgroundColor' => '#0ea5e9',
-                ],
-            ],
-        ];
-    }
-
-    protected function getOptions(): array
-    {
-        return [
-            'indexAxis' => 'y',
-            'plugins' => [
-                'legend' => [
-                    'display' => false,
-                ],
-            ],
-        ];
+        return '14, 165, 233';
     }
 }

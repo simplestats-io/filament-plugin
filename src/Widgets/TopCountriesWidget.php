@@ -2,50 +2,17 @@
 
 namespace SimpleStatsIo\FilamentPlugin\Widgets;
 
-use Filament\Widgets\ChartWidget;
-use SimpleStatsIo\FilamentPlugin\Concerns\InteractsWithSimplestatsApi;
-
-class TopCountriesWidget extends ChartWidget
+class TopCountriesWidget extends GroupedStatsTableWidget
 {
-    use InteractsWithSimplestatsApi;
+    protected static ?string $heading = 'Top Countries';
 
-    protected ?string $heading = 'Top Countries';
-
-    protected int|string|array $columnSpan = 'full';
-
-    protected ?string $maxHeight = '300px';
-
-    protected function getType(): string
+    protected function getStatsType(): string
     {
-        return 'bar';
+        return 'location_country';
     }
 
-    protected function getData(): array
+    protected function getGradientColor(): string
     {
-        $response = $this->getApiClient()->getGroupedStats('location_country', $this->getApiFilters());
-        $data = $response['data'] ?? [];
-
-        return [
-            'labels' => $this->truncateLabels(array_column($data, 'name')),
-            'datasets' => [
-                [
-                    'label' => 'Visitors',
-                    'data' => array_column($data, 'visitors'),
-                    'backgroundColor' => '#10b981',
-                ],
-            ],
-        ];
-    }
-
-    protected function getOptions(): array
-    {
-        return [
-            'indexAxis' => 'y',
-            'plugins' => [
-                'legend' => [
-                    'display' => false,
-                ],
-            ],
-        ];
+        return '16, 185, 129';
     }
 }
