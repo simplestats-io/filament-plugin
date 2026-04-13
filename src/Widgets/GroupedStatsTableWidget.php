@@ -24,7 +24,7 @@ abstract class GroupedStatsTableWidget extends TableWidget
     {
         return $table
             ->heading($this->getTableHeading())
-            ->records(function (string $sortColumn = null) {
+            ->records(function (?string $sortColumn = null) {
                 $this->cachedResponse = null;
 
                 return $this->getRecords($sortColumn);

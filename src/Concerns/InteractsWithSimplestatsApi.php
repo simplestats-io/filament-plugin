@@ -25,5 +25,4 @@ trait InteractsWithSimplestatsApi
             'comparison' => $comparison !== '0' ? $comparison : null,
         ]);
     }
-
 }
