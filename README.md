@@ -7,7 +7,7 @@
 
 The official [Filament v5](https://filamentphp.com) plugin for [SimpleStats.io](https://simplestats.io). View your analytics directly inside your Filament panel: visitors, registrations, revenue, top sources, and top countries.
 
-![screenshot](https://simplestats.io/images/screenshot.png)
+![screenshot](https://simplestats.io/images/screenshot_filament.png)
 
 ## Requirements
 
