@@ -6,6 +6,7 @@ use Filament\Support\Enums\TextSize;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
+use Illuminate\Support\HtmlString;
 use SimpleStatsIo\FilamentPlugin\Concerns\InteractsWithSimplestatsApi;
 
 abstract class GroupedStatsTableWidget extends TableWidget
@@ -58,10 +59,19 @@ abstract class GroupedStatsTableWidget extends TableWidget
 
     protected function getRecords(?string $sortColumn = null): array
     {
-        $data = $this->fetchResponse($sortColumn)['data'] ?? [];
+        $response = $this->fetchResponse($sortColumn);
+        $data = $response['data'] ?? [];
+        $previousByTypeId = [];
 
-        return array_map(function (array $record, int $index) {
+        foreach ($response['data_previous'] ?? [] as $prev) {
+            if (isset($prev['type_id'])) {
+                $previousByTypeId[$prev['type_id']] = $prev;
+            }
+        }
+
+        return array_map(function (array $record, int $index) use ($previousByTypeId) {
             $record['key'] = $record['type_id'] ?? $index;
+            $record['_previous'] = $previousByTypeId[$record['type_id'] ?? null] ?? null;
 
             return $record;
         }, $data, array_keys($data));
@@ -97,7 +107,8 @@ abstract class GroupedStatsTableWidget extends TableWidget
 
             TextColumn::make('visitors')
                 ->label('Visitors')
-                ->numeric()
+                ->html()
+                ->formatStateUsing(fn ($state, array $record): HtmlString => $this->formatWithComparison($state, $record, 'visitors', number_format((int) $state)))
                 ->sortable(query: fn () => null)
                 ->size(TextSize::ExtraSmall)
                 ->alignEnd()
@@ -105,7 +116,8 @@ abstract class GroupedStatsTableWidget extends TableWidget
 
             TextColumn::make('reg')
                 ->label('Regs')
-                ->numeric()
+                ->html()
+                ->formatStateUsing(fn ($state, array $record): HtmlString => $this->formatWithComparison($state, $record, 'reg', number_format((int) $state)))
                 ->sortable(query: fn () => null)
                 ->size(TextSize::ExtraSmall)
                 ->alignEnd()
@@ -113,7 +125,8 @@ abstract class GroupedStatsTableWidget extends TableWidget
 
             TextColumn::make('cr')
                 ->label('CR')
-                ->suffix('%')
+                ->html()
+                ->formatStateUsing(fn ($state, array $record): HtmlString => $this->formatWithComparison($state, $record, 'cr', $state.'%'))
                 ->sortable(query: fn () => null)
                 ->size(TextSize::ExtraSmall)
                 ->alignEnd()
@@ -121,7 +134,8 @@ abstract class GroupedStatsTableWidget extends TableWidget
 
             TextColumn::make('dau')
                 ->label(fn (): string => $this->getActiveUsersLabel())
-                ->numeric()
+                ->html()
+                ->formatStateUsing(fn ($state, array $record): HtmlString => $this->formatWithComparison($state, $record, 'dau', number_format((int) $state)))
                 ->sortable(query: fn () => null)
                 ->size(TextSize::ExtraSmall)
                 ->alignEnd()
@@ -129,12 +143,48 @@ abstract class GroupedStatsTableWidget extends TableWidget
 
             TextColumn::make('net')
                 ->label('Revenue')
-                ->formatStateUsing(fn ($state): string => number_format($state / 100, 2))
+                ->html()
+                ->formatStateUsing(fn ($state, array $record): HtmlString => $this->formatWithComparison($state, $record, 'net', number_format($state / 100, 2)))
                 ->sortable(query: fn () => null)
                 ->size(TextSize::ExtraSmall)
                 ->alignEnd()
                 ->visible(fn (): bool => $this->hasField('net')),
         ];
+    }
+
+    protected function formatWithComparison(mixed $state, array $record, string $field, string $formatted): HtmlString
+    {
+        $previous = $record['_previous'][$field] ?? null;
+
+        if ($previous === null || ! is_numeric($state)) {
+            return new HtmlString(e($formatted));
+        }
+
+        $current = (float) $state;
+        $previous = (float) $previous;
+
+        if ($previous == 0.0 && $current == 0.0) {
+            return new HtmlString(e($formatted));
+        }
+
+        if ($previous == 0.0) {
+            $change = 100.0;
+        } else {
+            $change = (($current - $previous) / $previous) * 100;
+        }
+
+        $rounded = round($change, abs($change) >= 10 ? 0 : 1);
+        $prefix = $rounded > 0 ? '+' : '';
+        $color = $rounded > 0 ? '#16a34a' : ($rounded < 0 ? '#dc2626' : '#6b7280');
+
+        $badge = sprintf(
+            '<span style="display:block;font-size:0.7rem;font-weight:600;line-height:1;color:%s;">%s%s%%</span>',
+            $color,
+            e($prefix),
+            e((string) $rounded),
+        );
+
+        return new HtmlString(e($formatted).$badge);
     }
 
     protected function calculatePercentage(array $record): int

@@ -75,6 +75,16 @@ class SimplestatsDashboard extends Dashboard
                     'all_time' => 'All Time',
                 ])
                 ->default('last_7_days'),
+            Forms\Components\Select::make('comparison')
+                ->label('Comparison')
+                ->options([
+                    '0' => 'No comparison',
+                    'period' => 'Previous period',
+                    'cycle' => 'Previous cycle',
+                    'year' => 'Year over year',
+                ])
+                ->default('0')
+                ->selectablePlaceholder(false),
         ]);
     }
 }
