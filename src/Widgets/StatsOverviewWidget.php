@@ -12,7 +12,7 @@ class StatsOverviewWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $response = $this->getApiClient()->getStats($this->getApiFilters());
+        $response = $this->getApiStats();
         $data = array_reverse($response['data'] ?? []);
         $previousData = array_reverse($response['data_previous'] ?? []);
 

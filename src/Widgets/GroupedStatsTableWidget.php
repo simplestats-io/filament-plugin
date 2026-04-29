@@ -38,13 +38,15 @@ abstract class GroupedStatsTableWidget extends TableWidget
     protected function fetchResponse(?string $sortColumn = null): array
     {
         if ($this->cachedResponse === null) {
-            $filters = $this->getApiFilters();
-
+            // For non-default sort, bypass the bundle (which uses default sort) and
+            // hit the API directly with the requested sort column.
             if ($sortColumn) {
+                $filters = $this->getApiFilters();
                 $filters['stats_sort'] = $sortColumn;
+                $this->cachedResponse = $this->getApiClient()->getGroupedStats($this->getStatsType(), $filters);
+            } else {
+                $this->cachedResponse = $this->getApiGroupedStats($this->getStatsType());
             }
-
-            $this->cachedResponse = $this->getApiClient()->getGroupedStats($this->getStatsType(), $filters);
         }
 
         return $this->cachedResponse;
@@ -178,13 +180,13 @@ abstract class GroupedStatsTableWidget extends TableWidget
         $color = $rounded > 0 ? '#16a34a' : ($rounded < 0 ? '#dc2626' : '#6b7280');
 
         $badge = sprintf(
-            '<span style="display:block;font-size:0.7rem;font-weight:600;line-height:1;color:%s;">%s%s%%</span>',
+            '<span style="display:block;text-align:end;font-size:0.7rem;font-weight:600;line-height:1.4;margin-top:0.125rem;color:%s;">%s%s%%</span>',
             $color,
             e($prefix),
             e((string) $rounded),
         );
 
-        return new HtmlString(e($formatted).$badge);
+        return new HtmlString('<span style="display:block;text-align:end;">'.e($formatted).'</span>'.$badge);
     }
 
     protected function calculatePercentage(array $record): int

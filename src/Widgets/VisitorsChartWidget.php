@@ -20,7 +20,7 @@ class VisitorsChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        $response = $this->getApiClient()->getStats($this->getApiFilters());
+        $response = $this->getApiStats();
         $data = array_reverse($response['data'] ?? []);
 
         $labels = array_column($data, 'date');
@@ -31,18 +31,20 @@ class VisitorsChartWidget extends ChartWidget
             [
                 'label' => 'Visitors',
                 'data' => $visitors,
-                'borderColor' => '#6366f1',
-                'backgroundColor' => 'rgba(99, 102, 241, 0.1)',
+                'borderColor' => '#3b82f6',
+                'backgroundColor' => 'rgba(59, 130, 246, 0.18)',
+                'pointBackgroundColor' => '#3b82f6',
                 'fill' => true,
-                'tension' => 0.3,
+                'tension' => 0.35,
             ],
             [
                 'label' => 'Registrations',
                 'data' => $registrations,
                 'borderColor' => '#10b981',
-                'backgroundColor' => 'rgba(16, 185, 129, 0.1)',
+                'backgroundColor' => 'rgba(16, 185, 129, 0.18)',
+                'pointBackgroundColor' => '#10b981',
                 'fill' => true,
-                'tension' => 0.3,
+                'tension' => 0.35,
             ],
         ];
 
@@ -51,18 +53,20 @@ class VisitorsChartWidget extends ChartWidget
             $datasets[] = [
                 'label' => 'Visitors (previous)',
                 'data' => array_column($previousData, 'pd_visitor'),
-                'borderColor' => '#6366f1',
+                'borderColor' => 'rgba(59, 130, 246, 0.55)',
                 'borderDash' => [5, 5],
                 'backgroundColor' => 'transparent',
-                'tension' => 0.3,
+                'pointBackgroundColor' => 'rgba(59, 130, 246, 0.55)',
+                'tension' => 0.35,
             ];
             $datasets[] = [
                 'label' => 'Registrations (previous)',
                 'data' => array_column($previousData, 'pd_reg'),
-                'borderColor' => '#10b981',
+                'borderColor' => 'rgba(16, 185, 129, 0.55)',
                 'borderDash' => [5, 5],
                 'backgroundColor' => 'transparent',
-                'tension' => 0.3,
+                'pointBackgroundColor' => 'rgba(16, 185, 129, 0.55)',
+                'tension' => 0.35,
             ];
         }
 

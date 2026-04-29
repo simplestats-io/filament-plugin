@@ -25,4 +25,28 @@ trait InteractsWithSimplestatsApi
             'comparison' => $comparison !== '0' ? $comparison : null,
         ]);
     }
+
+    /**
+     * Fetch the full dashboard bundle (stats + all grouped widgets) in one shot.
+     * The client memoizes results in-memory per request, so widgets that call this
+     * (or the underlying getStats / getGroupedStats) repeatedly only hit the
+     * upstream API once per filter combination.
+     *
+     * @return array{stats: array, grouped: array<string, array>}
+     */
+    protected function getApiData(): array
+    {
+        return $this->getApiClient()->getAll($this->getApiFilters());
+    }
+
+    protected function getApiStats(): array
+    {
+        return $this->getApiData()['stats'];
+    }
+
+    protected function getApiGroupedStats(string $type): array
+    {
+        return $this->getApiData()['grouped'][$type]
+            ?? $this->getApiClient()->getGroupedStats($type, $this->getApiFilters());
+    }
 }

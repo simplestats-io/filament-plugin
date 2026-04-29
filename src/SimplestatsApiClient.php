@@ -10,6 +10,15 @@ use Illuminate\Support\Facades\Log;
 
 class SimplestatsApiClient
 {
+    public const DEFAULT_GROUPED_TYPES = [
+        'track_referer',
+        'track_source',
+        'location_country',
+        'page_entry',
+    ];
+
+    protected array $memo = [];
+
     public function __construct(
         protected string $apiToken,
         protected string $apiUrl = 'https://simplestats.io/api/v1',
@@ -45,11 +54,35 @@ class SimplestatsApiClient
         ]);
     }
 
+    /**
+     * Bundle stats + grouped stats for the standard dashboard widgets in a single call.
+     * Subsequent calls to getStats / getGroupedStats with the same filters hit the
+     * in-memory memo populated here, so the dashboard renders without redundant work.
+     *
+     * @return array{stats: array, grouped: array<string, array>}
+     */
+    public function getAll(array $filters = [], array $groupedTypes = self::DEFAULT_GROUPED_TYPES): array
+    {
+        $grouped = [];
+        foreach ($groupedTypes as $type) {
+            $grouped[$type] = $this->getGroupedStats($type, $filters);
+        }
+
+        return [
+            'stats' => $this->getStats($filters),
+            'grouped' => $grouped,
+        ];
+    }
+
     protected function cachedRequest(string $endpoint, array $params = []): array
     {
         $cacheKey = 'simplestats_'.md5($endpoint.'_'.json_encode($params));
 
-        return Cache::remember($cacheKey, $this->cacheTtl, function () use ($endpoint, $params, $cacheKey) {
+        if (isset($this->memo[$cacheKey])) {
+            return $this->memo[$cacheKey];
+        }
+
+        return $this->memo[$cacheKey] = Cache::remember($cacheKey, $this->cacheTtl, function () use ($endpoint, $params, $cacheKey) {
             $response = $this->request($endpoint, $params);
 
             if (empty($response['data']) && empty($response['meta'])) {
