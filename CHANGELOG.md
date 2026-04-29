@@ -2,6 +2,18 @@
 
 All notable changes to `filament-plugin` will be documented in this file.
 
+## v1.2.2 - 2026-04-29
+
+### What's Changed
+
+* Fix: Remove unused ->hasViews() from service provider by @Pr4w in https://github.com/simplestats-io/filament-plugin/pull/2
+
+### New Contributors
+
+* @Pr4w made their first contribution in https://github.com/simplestats-io/filament-plugin/pull/2
+
+**Full Changelog**: https://github.com/simplestats-io/filament-plugin/compare/v1.2.1...v1.2.2
+
 ## v1.2.1 - 2026-04-29
 
 ### What's changed
