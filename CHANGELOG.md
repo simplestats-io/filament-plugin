@@ -2,6 +2,13 @@
 
 All notable changes to `filament-plugin` will be documented in this file.
 
+## v1.2.1 - 2026-04-29
+
+### What's changed
+
+* improved performance
+  **Full Changelog**: https://github.com/simplestats-io/filament-plugin/compare/v1.2.0...v1.2.1
+
 ## v1.2.0 - 2026-04-28
 
 ### What's changed
