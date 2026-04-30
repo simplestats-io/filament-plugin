@@ -2,6 +2,13 @@
 
 All notable changes to `filament-plugin` will be documented in this file.
 
+## v1.2.3 - 2026-04-30
+
+### What's changed
+
+* Drilldown Filter Support
+  **Full Changelog**: https://github.com/simplestats-io/filament-plugin/compare/v1.2.2...v1.2.3
+
 ## v1.2.2 - 2026-04-29
 
 ### What's Changed
