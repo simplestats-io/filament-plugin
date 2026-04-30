@@ -6,6 +6,7 @@ use Filament\Support\Enums\TextSize;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\HtmlString;
 use SimpleStatsIo\FilamentPlugin\Concerns\InteractsWithSimplestatsApi;
 
@@ -33,6 +34,53 @@ abstract class GroupedStatsTableWidget extends TableWidget
             ->columns($this->getTableColumns())
             ->defaultSort('visitors', 'desc')
             ->paginated(false);
+    }
+
+    protected function getTableHeading(): string|Htmlable|null
+    {
+        $base = static::$heading;
+        $active = $this->getActiveDrillDown($this->getStatsType());
+
+        if ($active === null) {
+            return $base;
+        }
+
+        $name = $this->lookupActiveDrilldownName($active);
+        $clearUrl = $this->buildDrilldownToggleUrl($this->getStatsType(), $active);
+
+        return new HtmlString(sprintf(
+            '%s <span style="font-size:0.8rem;font-weight:500;color:rgb(79,70,229);margin-left:0.5rem;">Filtered: <strong>%s</strong> <a href="%s" title="Clear filter" style="margin-left:0.25rem;text-decoration:none;color:rgb(107,114,128);">&times;</a></span>',
+            e($base ?? ''),
+            e($name),
+            e($clearUrl),
+        ));
+    }
+
+    protected function lookupActiveDrilldownName(mixed $activeValue): string
+    {
+        $data = $this->fetchResponse()['data'] ?? [];
+
+        foreach ($data as $row) {
+            $rowId = $row['type_id'] ?? -1;
+            if ((string) $rowId === (string) $activeValue) {
+                return (string) ($row['name'] ?? "#{$activeValue}");
+            }
+        }
+
+        return "#{$activeValue}";
+    }
+
+    protected function isActiveDrilldownRecord(array $record): bool
+    {
+        $active = $this->getActiveDrillDown($this->getStatsType());
+
+        if ($active === null) {
+            return false;
+        }
+
+        $rowId = $record['type_id'] ?? -1;
+
+        return (string) $active === (string) $rowId;
     }
 
     protected function fetchResponse(?string $sortColumn = null): array
@@ -98,13 +146,20 @@ abstract class GroupedStatsTableWidget extends TableWidget
                 ->limit(30)
                 ->sortable(query: fn () => null)
                 ->size(TextSize::ExtraSmall)
+                ->url(fn (array $record): string => $this->buildDrilldownToggleUrl(
+                    $this->getStatsType(),
+                    $record['type_id'] ?? null,
+                ))
                 ->extraCellAttributes(function (array $record): array {
                     $percentage = $this->calculatePercentage($record);
                     $color = $this->getGradientColor();
+                    $style = "background: linear-gradient(to right, rgba({$color}, 0.3) {$percentage}%, transparent {$percentage}%);";
 
-                    return [
-                        'style' => "background: linear-gradient(to right, rgba({$color}, 0.3) {$percentage}%, transparent {$percentage}%);",
-                    ];
+                    if ($this->isActiveDrilldownRecord($record)) {
+                        $style .= ' font-weight: 600;';
+                    }
+
+                    return ['style' => $style];
                 }),
 
             TextColumn::make('visitors')

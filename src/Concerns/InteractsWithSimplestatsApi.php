@@ -4,6 +4,7 @@ namespace SimpleStatsIo\FilamentPlugin\Concerns;
 
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use SimpleStatsIo\FilamentPlugin\SimplestatsApiClient;
+use SimpleStatsIo\FilamentPlugin\Support\DrilldownFilters;
 
 trait InteractsWithSimplestatsApi
 {
@@ -16,14 +17,22 @@ trait InteractsWithSimplestatsApi
 
     protected function getApiFilters(): array
     {
-        $filters = $this->pageFilters ?? [];
+        return DrilldownFilters::buildApiFilters($this->pageFilters ?? []);
+    }
 
-        $comparison = $filters['comparison'] ?? '0';
+    /**
+     * Returns the active drilldown value (type_id) for the given stats type, or null.
+     */
+    protected function getActiveDrillDown(string $statsType): mixed
+    {
+        $value = ($this->pageFilters ?? [])[$statsType] ?? null;
 
-        return array_filter([
-            'preset' => $filters['preset'] ?? 'last_7_days',
-            'comparison' => $comparison !== '0' ? $comparison : null,
-        ]);
+        return ($value === '' || $value === null) ? null : $value;
+    }
+
+    protected function buildDrilldownToggleUrl(string $statsType, mixed $typeId): string
+    {
+        return DrilldownFilters::toggleUrl($this->pageFilters ?? [], $statsType, $typeId);
     }
 
     /**
