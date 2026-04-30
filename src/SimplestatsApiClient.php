@@ -4,9 +4,12 @@ namespace SimpleStatsIo\FilamentPlugin;
 
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Pool;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class SimplestatsApiClient
 {
@@ -63,15 +66,109 @@ class SimplestatsApiClient
      */
     public function getAll(array $filters = [], array $groupedTypes = self::DEFAULT_GROUPED_TYPES): array
     {
+        $requests = ['stats' => ['endpoint' => 'stats', 'params' => $filters]];
+        foreach ($groupedTypes as $type) {
+            $requests['grouped:'.$type] = [
+                'endpoint' => 'stats/grouped',
+                'params' => ['stats_type' => $type, ...$filters],
+            ];
+        }
+
+        $results = $this->pooledCachedRequest($requests);
+
         $grouped = [];
         foreach ($groupedTypes as $type) {
-            $grouped[$type] = $this->getGroupedStats($type, $filters);
+            $grouped[$type] = $results['grouped:'.$type];
         }
 
         return [
-            'stats' => $this->getStats($filters),
+            'stats' => $results['stats'],
             'grouped' => $grouped,
         ];
+    }
+
+    /**
+     * Resolve a batch of cached/pool requests, fetching cache misses concurrently.
+     *
+     * @param  array<string, array{endpoint: string, params: array}>  $requests
+     * @return array<string, array>
+     */
+    protected function pooledCachedRequest(array $requests): array
+    {
+        $results = [];
+        $toFetch = [];
+
+        foreach ($requests as $key => $req) {
+            $cacheKey = 'simplestats_'.md5($req['endpoint'].'_'.json_encode($req['params']));
+
+            if (isset($this->memo[$cacheKey])) {
+                $results[$key] = $this->memo[$cacheKey];
+                continue;
+            }
+
+            $cached = Cache::get($cacheKey);
+            if ($cached !== null) {
+                $this->memo[$cacheKey] = $cached;
+                $results[$key] = $cached;
+                continue;
+            }
+
+            $toFetch[$key] = $req + ['cache_key' => $cacheKey];
+        }
+
+        if (empty($toFetch)) {
+            return $results;
+        }
+
+        $responses = Http::pool(function (Pool $pool) use ($toFetch) {
+            $promises = [];
+            foreach ($toFetch as $key => $req) {
+                $promises[] = $pool->as($key)
+                    ->withToken($this->apiToken)
+                    ->acceptJson()
+                    ->timeout(10)
+                    ->baseUrl($this->apiUrl)
+                    ->get($req['endpoint'], $req['params']);
+            }
+
+            return $promises;
+        });
+
+        foreach ($toFetch as $key => $req) {
+            $results[$key] = $this->resolvePoolResponse($req['endpoint'], $req['cache_key'], $responses[$key] ?? null);
+        }
+
+        return $results;
+    }
+
+    protected function resolvePoolResponse(string $endpoint, string $cacheKey, Response|Throwable|null $response): array
+    {
+        if ($response instanceof Throwable) {
+            Log::warning('SimpleStats API connection failed', [
+                'endpoint' => $endpoint,
+                'message' => $response->getMessage(),
+            ]);
+
+            return $this->emptyResponse();
+        }
+
+        if ($response === null || $response->failed()) {
+            Log::warning('SimpleStats API request failed', [
+                'endpoint' => $endpoint,
+                'status' => $response?->status(),
+            ]);
+
+            return $this->emptyResponse();
+        }
+
+        $data = $response->json() ?? $this->emptyResponse();
+
+        if (! empty($data['data']) || ! empty($data['meta'])) {
+            $this->memo[$cacheKey] = $data;
+            Cache::put($cacheKey, $data, $this->cacheTtl);
+        }
+
+        return $data;
     }
 
     protected function cachedRequest(string $endpoint, array $params = []): array
