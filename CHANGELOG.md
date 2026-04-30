@@ -2,6 +2,13 @@
 
 All notable changes to `filament-plugin` will be documented in this file.
 
+## v1.2.4 - 2026-04-30
+
+### What's changed
+
+* fixed view error
+  **Full Changelog**: https://github.com/simplestats-io/filament-plugin/compare/v1.2.3...v1.2.4
+
 ## v1.2.3 - 2026-04-30
 
 ### What's changed
