@@ -103,6 +103,7 @@ class SimplestatsApiClient
 
             if (isset($this->memo[$cacheKey])) {
                 $results[$key] = $this->memo[$cacheKey];
+
                 continue;
             }
 
@@ -110,6 +111,7 @@ class SimplestatsApiClient
             if ($cached !== null) {
                 $this->memo[$cacheKey] = $cached;
                 $results[$key] = $cached;
+
                 continue;
             }
 
