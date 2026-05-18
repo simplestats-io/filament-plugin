@@ -4,6 +4,7 @@
 [![Tests](https://github.com/simplestats-io/filament-plugin/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/simplestats-io/filament-plugin/actions/workflows/run-tests.yml)
 [![Fix PHP code style issues](https://github.com/simplestats-io/filament-plugin/actions/workflows/fix-php-code-style-issues.yml/badge.svg?branch=main)](https://github.com/simplestats-io/filament-plugin/actions/workflows/fix-php-code-style-issues.yml)
 [![License](https://img.shields.io/packagist/l/simplestats-io/filament-plugin.svg?style=flat-square)](https://packagist.org/packages/simplestats-io/filament-plugin)
+[![Laravel Compatibility](https://badge.laravel.cloud/badge/simplestats-io/filament-plugin)](https://packagist.org/packages/simplestats-io/filament-plugin)
 
 The official [Filament v5](https://filamentphp.com) plugin for [SimpleStats.io](https://simplestats.io). View your analytics directly inside your Filament panel: visitors, registrations, revenue, top sources, and top countries.
 
