@@ -2,6 +2,14 @@
 
 All notable changes to `filament-plugin` will be documented in this file.
 
+## v1.3.0 - 2026-10-27
+
+### Added
+
+- New `php artisan simplestats-filament:install` command: publishes the config file and asks whether you would like to star the repo on GitHub. The docs now use it instead of `vendor:publish` (which keeps working).
+
+**Full Changelog**: https://github.com/simplestats-io/filament-plugin/compare/v1.2.4...v1.3.0
+
 ## v1.2.4 - 2026-04-30
 
 ### What's changed
