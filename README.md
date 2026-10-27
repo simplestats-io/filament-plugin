@@ -28,7 +28,7 @@ composer require simplestats-io/filament-plugin
 Optionally publish the config file:
 
 ```bash
-php artisan vendor:publish --tag="simplestats-filament-config"
+php artisan simplestats-filament:install
 ```
 
 Add your API token to `.env`:

@@ -2,6 +2,7 @@
 
 namespace SimpleStatsIo\FilamentPlugin;
 
+use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -14,6 +15,11 @@ class SimplestatsPluginServiceProvider extends PackageServiceProvider
         $package
             ->name(static::$name)
             ->hasConfigFile()
-            ->hasViews();
+            ->hasViews()
+            ->hasInstallCommand(function (InstallCommand $command) {
+                $command
+                    ->publishConfigFile()
+                    ->askToStarRepoOnGitHub('simplestats-io/filament-plugin');
+            });
     }
 }
